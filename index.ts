@@ -15,7 +15,7 @@ class Produktas {
         this.barcode = 100000 + Math.round(Math.random() * 10000);
     }
 
-    public spausdintiDuomenis(): void {
+    public spausdintiDuomenis(): void {         // cia viduje nurodome, ka noresime atspaudinti
         console.log(`Produktas: ${this.pavadinimas}`);
         console.log(`Barkodas: ${this.barcode}`);
         console.log(`Svoris: ${this.svoris} g.`);
@@ -24,6 +24,7 @@ class Produktas {
 }
 
 // Enum - https://www.typescriptlang.org/docs/handbook/enums.html
+// enum naudojamas baigtiniam sarasui savybiu (pvz: akiu spalva, lytis)
 enum BulvytesTipas {
     Lazdeles = "lzdl",
     Laiveliai = "lvl",
@@ -56,6 +57,10 @@ class B extends A {
 
 // Paveldėjimas
 // https://www.typescriptlang.org/docs/handbook/2/classes.html#extends-clauses
+// DRY - do not repeat yourself :)
+// bulvytes papildo produkto klase, reikia paveldi pagrindines klases parametrsu.
+// reiskia si klase elgsis taip pat kaip pagrindine klase (parent class)
+// todel siai dukretinei klasei priskiriam tik jau budingus papildomus parametrus
 class Bulvytes extends Produktas {
     public readonly kiekis: number;
     public readonly tipas: BulvytesTipas;
@@ -63,6 +68,7 @@ class Bulvytes extends Produktas {
     constructor(kiekis: number,
         tipas: BulvytesTipas = BulvytesTipas.Lazdeles) {
         // https://www.typescriptlang.org/docs/handbook/2/classes.html#super-calls
+        // tevines klases reiksmes/savybes(konstruktorius) yra iskvieciamos per "super" metoda
         super("Bulvytės", 150, 2);
 
         this.tipas = tipas;
