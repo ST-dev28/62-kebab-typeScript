@@ -116,6 +116,8 @@ class Kebabas extends Produktas {
 
     public pridetiPadaza(padazas: Padazas): void {
         this.padazai.push(padazas);
+        console.log(this.padazai);
+
     };
 
     public spausdintiDuomenis(): void {
