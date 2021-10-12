@@ -1,3 +1,8 @@
+/* 
+1. isirasome "Live Sass compiler", sukuriam scss faila ir 
+    F1 ir sarase spausti "Live Sass: watch Sass"
+2.  sistema automatiskai sukurs css failus
+*/
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -100,6 +105,28 @@ body .menu .card {
   padding: 15px;
 }
 
+body .menu .card .controls {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin-bottom: 10px;
+  -webkit-box-pack: right;
+      -ms-flex-pack: right;
+          justify-content: right;
+}
+
+body .menu .card .controls .icon {
+  width: 24px;
+  height: auto;
+  margin-left: 10px;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+body .menu .card .controls .icon:hover {
+  opacity: 1;
+}
+
 body .menu .card h2 {
   font-weight: 600;
   font-size: 24px;
@@ -109,3 +136,8 @@ body .menu .card h2 {
 body .menu .card ul li {
   line-height: 1.5;
 }
+
+body .menu .card ul li b {
+  font-weight: 700;
+}
+/*# sourceMappingURL=style.css.map */
