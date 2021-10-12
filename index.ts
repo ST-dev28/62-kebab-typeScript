@@ -134,15 +134,42 @@ class Kebabas extends Produktas {
 }
 
 const bulvytes = new Bulvytes(14, BulvytesTipas.Puseles);
-
 const kebabas = new Kebabas(667);
 const velniskasPadazas = new Padazas(PadazoTipas.Astrus, "Velniskas");
 const dieviskasPadazas = new Padazas(PadazoTipas.Cesnakinis, "Dieviskas");
-kebabas.pridetiPadaza(velniskasPadazas);
-kebabas.pridetiPadaza(dieviskasPadazas);
+//kebabas.pridetiPadaza(velniskasPadazas);
+//kebabas.pridetiPadaza(dieviskasPadazas);
+//kebabas.spausdintiDuomenis();
 
-kebabas.spausdintiDuomenis();
+// funkcionalumas
 
-enum PitosTipas {
-    PilnoGrudo,
+// variantas, kuri naudojome Javascrip
+//const nameInput = document.getElementById("produktoPavadinimas");
+//const kainaInput = document.getElementById("produktoKaina");
+//c/onst svorisInput = document.getElementById("produktoSvoris");
+//onst addButton = document.getElementById("pridetiProdukta");
+
+//naujas variantas Typescript
+const UI = {
+    // https://stackoverflow.com/questions/13204759/typescript-or-javascript-type-casting
+    nameInput: document.getElementById("produktoPavadinimas") as HTMLInputElement,
+    priceInput: document.getElementById("produktoKaina") as HTMLInputElement,
+    weightInput: document.getElementById("produktoSvoris") as HTMLInputElement,
+    addButton: document.getElementById("pridetiProdukta") as HTMLButtonElement,
 }
+//patikrinam, ar randa mygtuko elementa
+//console.log((UI.addButton));
+
+const produktai: Produktas[] = [];
+
+UI.addButton.addEventListener("click", (e) => {
+    const pavadinimas = UI.nameInput.value;
+    const svoris = Number(UI.weightInput.value);
+    const kaina = Number(UI.priceInput.value);
+
+    const naujasProduktas = new Produktas(pavadinimas, svoris, kaina);
+
+    produktai.push(naujasProduktas);
+
+    console.log(produktai);
+});
