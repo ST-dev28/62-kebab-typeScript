@@ -3,6 +3,14 @@ tsc -w
 F1 -> Life sass: watch sass
 */
 
+// https://www.typescriptlang.org/docs/handbook/2/objects.html
+interface ProduktasI {
+    pavadinimas: string;
+    svoris: number;    // svoris?: --> reiskia, kad svoris nera butinas
+    kaina: number;
+    barcode: number;
+}
+
 class Produktas {
 
     public get barcode(): number {
@@ -16,13 +24,15 @@ class Produktas {
 
     public constructor(pavadinimas: string,
         svoris: number,
-        kaina: number) {
+        kaina: number,
+        barcode?: number) {    //reiskia, kad barkodas nera butinas
 
         this.kaina = kaina;
         this.svoris = svoris;
         this.pavadinimas = pavadinimas;
 
-        this._barcode = 100000 + Math.round(Math.random() * 10000);
+        this._barcode = barcode || 100000 + Math.round(Math.random() * 10000);
+        // grazinama pirma truthy reiksme (jei underfined, tada skaiciuoja pagal formule)
     }
 
     //public spausdintiDuomenis(): void {         // cia viduje nurodome, ka noresime atspaudinti
@@ -51,7 +61,17 @@ class Produktas {
                 </div>`;
         }
     }
+
+    public toJSON(): any {
+        return {
+            kaina: this.kaina,
+            svoris: this.svoris,
+            pavadinimas: this.pavadinimas,
+            barcode: this._barcode    // pakeiciam, kad barcode butu be "_" priekyje
+        };
+    }
 }
+
 
 // Enum - https://www.typescriptlang.org/docs/handbook/enums.html
 // enum naudojamas baigtiniam sarasui savybiu (pvz: akiu spalva, lytis)
@@ -171,7 +191,9 @@ const dieviskasPadazas = new Padazas(PadazoTipas.Cesnakinis, "Dieviskas");
 //kebabas.pridetiPadaza(dieviskasPadazas);
 //kebabas.spausdintiDuomenis();
 
-// funkcionalumas
+// **** FUNKCIONALUMAS ****
+
+const PRODUCTS_LOCAL_STORAGE_KEY = "products";
 
 // variantas, kuri naudojome Javascrip
 //const nameInput = document.getElementById("produktoPavadinimas");
@@ -187,7 +209,7 @@ const UI = {
     weightInput: document.getElementById("produktoSvoris") as HTMLInputElement,
     addButton: document.getElementById("pridetiProdukta") as HTMLButtonElement,
     // https://www.typescriptlang.org/docs/handbook/2/generics.html
-    menuContainer: document.querySelector<HTMLDivElement>(".menu")
+    menuContainer: document.querySelector<HTMLDivElement>(".menu") as HTMLDivElement
 }
 //patikrinam, ar randa mygtuko elementa
 //console.log((UI.addButton));
@@ -199,7 +221,7 @@ UI.addButton.addEventListener("click", (e) => {
     const svoris = Number(UI.weightInput.value);
     const kaina = Number(UI.priceInput.value);
 
-    const pradzia = Date.now();
+    //const pradzia = Date.now();
 
     const naujasProduktas = new Produktas(pavadinimas, svoris, kaina);
 
@@ -208,12 +230,12 @@ UI.addButton.addEventListener("click", (e) => {
 
     atvaizduotiProduktus();
 
-    const pabaiga = Date.now();
+    //const pabaiga = Date.now();
 
     // ziurim, per kiek laiko sukonfiguruoja visas meniu korteles
-    const skirtumas = (pabaiga - pradzia) / 1000;
+    //const skirtumas = (pabaiga - pradzia) / 1000;
 
-    console.log(`Praėjo ${skirtumas} sek.`)
+    //console.log(`Praėjo ${skirtumas} sek.`)
 });
 
 function atvaizduotiProduktus(): void {
@@ -225,16 +247,17 @@ function atvaizduotiProduktus(): void {
 }
 
 function kopijuotiProdukta(barcode: number): void {
-    console.log("Kopijuoti produkta!");
+    console.log("Kopijuoti produktą!");
 
-    const produktas = produktai.find((produktas: Produktas) => produktas.barcode === barcode);
+    const produktas = produktai.find((produktas) => produktas.barcode === barcode);
 
     if (!produktas)
         throw new Error("Produktas nerastas!");
 
-    const naujasProduktas = new Produktas(produktas.pavadinimas, produktas.svoris, produktas.kaina)
+    const naujasProduktas = new Produktas(produktas.pavadinimas, produktas.svoris, produktas.kaina);
     produktai.push(naujasProduktas);
     naujasProduktas.spausdintiDuomenis(UI.menuContainer);
+    saveProducts();
 }
 
 function istrintiProdukta(barcode: number): void {
@@ -252,4 +275,52 @@ function istrintiProdukta(barcode: number): void {
     produktai = produktai.filter((produktas) => produktas.barcode !== barcode);
 
     atvaizduotiProduktus();
+    saveProducts();
 }
+
+function loadProducts(): void {
+    const p = window.localStorage.getItem(PRODUCTS_LOCAL_STORAGE_KEY);    // "[{"kaina":123,"svoris":33,"pavadinimas":"Lego","_barcode":102279}]"
+
+    if (!p) {    // grazina arba null arba true
+        return;  // jei null ar tuscias, toliau neina
+    }
+
+    /* const prod: ProduktasI = {
+         pavadinimas: "Lego",
+         svoris: 200,
+         kaina: 20,
+         _barcode: 1234,
+     }*/
+
+    // !"" - true
+    // !"{}" - false
+
+    const produktaBeMetodu: ProduktasI[] = JSON.parse(p);
+
+    for (const produktas of produktaBeMetodu) {
+        const naujasProduktas = new Produktas(
+            produktas.pavadinimas,
+            produktas.svoris,
+            produktas.kaina,
+            produktas.barcode);
+
+        produktai.push(naujasProduktas);
+    }
+    //produktai = JSON.parse(p);    //pavercia stringa i JS reiksmes
+
+    // jei norime, kad spausdintu tik barkodus
+    const barkodai = produktai.map((produktas) => {
+        return produktas.barcode;
+    });
+    console.log(barkodai);
+
+    atvaizduotiProduktus();
+}
+
+function saveProducts(): void {
+    const produktaiString = JSON.stringify(produktai);   // pavercia reiksme i stringa ir panaikina visus metodus
+
+    window.localStorage.setItem(PRODUCTS_LOCAL_STORAGE_KEY, produktaiString);
+}
+
+loadProducts();
