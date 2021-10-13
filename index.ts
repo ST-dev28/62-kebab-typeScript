@@ -38,7 +38,7 @@ class Produktas {
                 <div class="card">
                     <div class="controls">
                         <img onclick="istrintiProdukta(${this._barcode})" class="icon delete" src="https://cdn-icons-png.flaticon.com/512/1214/1214428.png">
-                        <img onclick="kopijuotiProdukta()" class="icon copy" src="https://cdn-icons-png.flaticon.com/512/54/54702.png">
+                        <img onclick="kopijuotiProdukta(${this._barcode})" class="icon copy" src="https://cdn-icons-png.flaticon.com/512/54/54702.png">
                     </div>
                 
                     <h2>${this.pavadinimas}</h2>
@@ -224,10 +224,17 @@ function atvaizduotiProduktus(): void {
     }
 }
 
-function kopijuotiProdukta(): void {
-    console.log("Kopijuoti produktą...");
+function kopijuotiProdukta(barcode: number): void {
+    console.log("Kopijuoti produkta!");
 
-    atvaizduotiProduktus();
+    const produktas = produktai.find((produktas: Produktas) => produktas.barcode === barcode);
+
+    if (!produktas)
+        throw new Error("Produktas nerastas!");
+
+    const naujasProduktas = new Produktas(produktas.pavadinimas, produktas.svoris, produktas.kaina)
+    produktai.push(naujasProduktas);
+    naujasProduktas.spausdintiDuomenis(UI.menuContainer);
 }
 
 function istrintiProdukta(barcode: number): void {
