@@ -7,5 +7,6 @@
         "removeComments": true,
         "target": "ES6",
         "strict": false,
-    },
+        "strictNullChecks": false
+    }
 }
