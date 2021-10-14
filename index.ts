@@ -11,6 +11,7 @@ interface ProduktasI {
     barcode: number;
 }
 
+// class yra objekto sablonas
 class Produktas {
 
     public get barcode(): number {
